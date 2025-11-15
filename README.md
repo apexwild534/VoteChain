@@ -261,7 +261,7 @@ GET /election/status
 
 ---
 
-# [LICENSE](License)
+# LICENSE
 
 This project is distributed under the terms of the **[LICENSE](License)** file included in the repository.
 
