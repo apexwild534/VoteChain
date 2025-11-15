@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>VoteChain Admin Dashboard</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 40px;
+            background: #f5f5f5;
+        }
+
+        .container {
+            max-width: 700px;
+            margin: auto;
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 0 12px rgba(0,0,0,0.08);
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        #status {
+            background: #e7f3fe;
+            padding: 12px;
+            border-left: 5px solid #0275d8;
+            margin-bottom: 25px;
+            border-radius: 6px;
+            font-weight: bold;
+        }
+
+        .actions {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        a.action {
+            display: block;
+            padding: 18px;
+            background: #0275d8;
+            text-align: center;
+            color: white;
+            text-decoration: none;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: 0.2s ease;
+        }
+
+        a.action:hover {
+            background: #025aa5;
+        }
+
+        .logout {
+            margin-top: 30px;
+            text-align: center;
+        }
+
+        .logout button {
+            padding: 10px 20px;
+            font-size: 15px;
+            border: none;
+            border-radius: 8px;
+            background: #d9534f;
+            color: white;
+            cursor: pointer;
+        }
+
+        .logout button:hover {
+            background: #c9302c;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Admin Dashboard</h1>
+
+    <div id="status">Loading election status...</div>
+
+    <div class="actions">
+        <a href="manage_candidates.html" class="action">Manage Candidates</a>
+        <a href="voters_list.html" class="action">View Registered Voters</a>
+        <a href="results.html" class="action">View Results</a>
+        <a href="clear_election.html" class="action">Clear Election</a>
+        <a href="start_election.html" class="action">Start Election</a>
+        <a href="end_election.html" class="action">End Election</a>
+    </div>
+
+    <div class="logout">
+        <button id="logoutBtn">Logout</button>
+    </div>
+</div>
+
+
+<script>
+    const STATUS_API = "http://localhost:8000/election/status";
+
+    // Redirect if not logged in
+    const token = localStorage.getItem("admin_token");
+    if (!token) {
+        window.location.href = "login.html";
+    }
+
+    // Fetch election status
+    async function loadStatus() {
+        try {
+            const res = await fetch(STATUS_API);
+            const data = await res.json();
+
+            document.getElementById("status").textContent =
+                "Election Status: " + data.status;
+        } catch (err) {
+            document.getElementById("status").textContent =
+                "Error loading election status.";
+        }
+    }
+
+    loadStatus();
+
+    // Logout functionality
+    document.getElementById("logoutBtn").addEventListener("click", () => {
+        localStorage.removeItem("admin_token");
+        window.location.href = "login.html";
+    });
+</script>
+
+</body>
+</html>

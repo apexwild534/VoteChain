@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>VoteChain – Voter Home</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 40px;
+            background: #f5f5f5;
+        }
+        .container {
+            max-width: 700px;
+            margin: auto;
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 0 12px rgba(0,0,0,0.08);
+        }
+        h2 {
+            text-align: center;
+        }
+        #statusBox {
+            background: #e7f3fe;
+            padding: 12px;
+            border-radius: 6px;
+            border-left: 5px solid #0275d8;
+            margin-bottom: 20px;
+            font-weight: bold;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+        th, td {
+            padding: 12px;
+            border-bottom: 1px solid #ddd;
+            text-align: center;
+        }
+        th {
+            background: #f0f0f0;
+        }
+        .action-btn {
+            margin-top: 20px;
+            padding: 12px 20px;
+            background: #0275d8;
+            color: white;
+            border-radius: 8px;
+            text-decoration: none;
+            display: block;
+            text-align: center;
+            font-size: 16px;
+        }
+        .action-btn:hover {
+            background: #025aa5;
+        }
+        .logout {
+            margin-top: 20px;
+            text-align: center;
+        }
+        .logout button {
+            padding: 10px 20px;
+            background: #d9534f;
+            color: white;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+        }
+        .logout button:hover {
+            background: #c9302c;
+        }
+        #msg {
+            text-align: center;
+            margin-top: 15px;
+            font-weight: bold;
+        }
+        .error {
+            color: #a94442;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+
+    <h2>Voter Home</h2>
+
+    <div id="statusBox">Checking election status...</div>
+
+    <h3>Available Candidates</h3>
+
+    <table id="candidateTable">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Candidate</th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+
+    <!-- Dynamic buttons -->
+    <a id="voteBtn" class="action-btn" href="vote.html" style="display:none;">Go to Voting Page</a>
+    <a id="resultsBtn" class="action-btn" href="results.html" style="display:none; background:#5cb85c;">View Results</a>
+
+    <div class="logout">
+        <button id="logoutBtn">Logout</button>
+    </div>
+
+    <div id="msg"></div>
+
+</div>
+
+<script>
+    const STATUS_API = "http://localhost:8000/election/status";
+    const CANDS_API = "http://localhost:8000/voter/candidates";
+
+    const token = localStorage.getItem("voter_token");
+
+    // Redirect to login if not authenticated
+    if (!token) {
+        window.location.href = "login.html";
+    }
+
+    const statusBox = document.getElementById("statusBox");
+    const tableBody = document.querySelector("#candidateTable tbody");
+    const msgDiv = document.getElementById("msg");
+
+    // Load election status
+    async function loadStatus() {
+        try {
+            const res = await fetch(STATUS_API);
+            const data = await res.json();
+
+            statusBox.textContent = `Election Status: ${data.status}`;
+
+            const voteBtn = document.getElementById("voteBtn");
+            const resultsBtn = document.getElementById("resultsBtn");
+
+            if (data.status === "ONGOING") {
+                voteBtn.style.display = "block";
+                resultsBtn.style.display = "none";
+            } else if (data.status === "ENDED") {
+                voteBtn.style.display = "none";
+                resultsBtn.style.display = "block";
+            } else {
+                voteBtn.style.display = "none";
+                resultsBtn.style.display = "none";
+            }
+
+        } catch (err) {
+            statusBox.textContent = "Error fetching election status.";
+            msgDiv.textContent = "Network error.";
+            msgDiv.className = "error";
+        }
+    }
+
+    // Load candidates
+    async function loadCandidates() {
+        try {
+            const res = await fetch(CANDS_API, {
+                headers: { "Authorization": token }
+            });
+
+            const data = await res.json();
+
+            tableBody.innerHTML = "";
+
+            data.candidates.forEach(c => {
+                const row = document.createElement("tr");
+                row.innerHTML = `
+                    <td>${c.id}</td>
+                    <td>${c.name}</td>
+                `;
+                tableBody.appendChild(row);
+            });
+
+        } catch (err) {
+            msgDiv.textContent = "Failed to load candidates.";
+            msgDiv.className = "error";
+        }
+    }
+
+    // Logout
+    document.getElementById("logoutBtn").addEventListener("click", () => {
+        localStorage.removeItem("voter_token");
+        window.location.href = "login.html";
+    });
+
+    loadStatus();
+    loadCandidates();
+</script>
+
+</body>
+</html>

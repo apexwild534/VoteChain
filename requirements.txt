@@ -1,0 +1,18 @@
+fastapi
+uvicorn
+sqlalchemy
+pydantic
+python-jose
+passlib
+python-multipart
+
+# JSON + hashing helpers
+orjson
+
+# Testing
+pytest
+pytest-cov
+httpx
+
+# Optional (used by some setups)
+python-dotenv

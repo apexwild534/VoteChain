@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>VoteChain – Voter Login</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f5f5f5;
+            padding: 40px;
+        }
+        .container {
+            max-width: 400px;
+            margin: auto;
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 0 12px rgba(0,0,0,0.08);
+        }
+        h2 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        input {
+            width: 100%;
+            padding: 12px;
+            margin-top: 10px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            font-size: 15px;
+        }
+        button {
+            width: 100%;
+            padding: 12px;
+            margin-top: 20px;
+            border: none;
+            border-radius: 8px;
+            background: #0275d8;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        button:hover {
+            background: #025aa5;
+        }
+        #msg {
+            margin-top: 15px;
+            text-align: center;
+            font-weight: bold;
+        }
+        .error {
+            color: #a94442;
+        }
+        .success {
+            color: #3c763d;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+
+    <h2>Voter Login</h2>
+
+    <input id="voterId" type="text" placeholder="Enter your Voter ID">
+
+    <button id="loginBtn">Login</button>
+
+    <div id="msg"></div>
+
+</div>
+
+<script>
+    const LOGIN_API = "http://localhost:8000/voter/login";
+
+    // If already logged in, redirect
+    if (localStorage.getItem("voter_token")) {
+        window.location.href = "home.html";
+    }
+
+    const msgDiv = document.getElementById("msg");
+
+    document.getElementById("loginBtn").addEventListener("click", async () => {
+        const voterId = document.getElementById("voterId").value.trim();
+
+        if (!voterId) {
+            msgDiv.textContent = "Voter ID cannot be empty.";
+            msgDiv.className = "error";
+            return;
+        }
+
+        try {
+            const res = await fetch(`${LOGIN_API}?voter_id=${encodeURIComponent(voterId)}`, {
+                method: "POST"
+            });
+
+            const data = await res.json();
+
+            if (res.ok && data.token) {
+                localStorage.setItem("voter_token", data.token);
+                msgDiv.textContent = "Login successful!";
+                msgDiv.className = "success";
+
+                setTimeout(() => {
+                    window.location.href = "home.html";
+                }, 600);
+
+            } else {
+                msgDiv.textContent = data.detail || "Invalid Voter ID.";
+                msgDiv.className = "error";
+            }
+
+        } catch (err) {
+            msgDiv.textContent = "Network error.";
+            msgDiv.className = "error";
+        }
+    });
+</script>
+
+</body>
+</html>

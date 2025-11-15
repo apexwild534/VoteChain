@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>VoteChain – Cast Your Vote</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 40px;
+            background: #f5f5f5;
+        }
+
+        .container {
+            max-width: 700px;
+            margin: auto;
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 0 12px rgba(0,0,0,0.08);
+        }
+
+        h2 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        a.back {
+            text-decoration: none;
+            color: #0275d8;
+            margin-bottom: 20px;
+            display: inline-block;
+        }
+
+        a.back:hover {
+            text-decoration: underline;
+        }
+
+        #statusBox {
+            background: #e7f3fe;
+            padding: 12px;
+            border-left: 5px solid #0275d8;
+            margin-bottom: 20px;
+            border-radius: 6px;
+            font-weight: bold;
+        }
+
+        .candidate {
+            padding: 14px;
+            border-bottom: 1px solid #ddd;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .candidate label {
+            font-size: 16px;
+        }
+
+        #voteBtn {
+            width: 100%;
+            padding: 12px;
+            margin-top: 20px;
+            background: #0275d8;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        #voteBtn:hover {
+            background: #025aa5;
+        }
+
+        #msg {
+            margin-top: 20px;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        .error {
+            color: #a94442;
+        }
+
+        .success {
+            color: #3c763d;
+        }
+
+        .logout {
+            margin-top: 30px;
+            text-align: center;
+        }
+        .logout button {
+            padding: 10px 20px;
+            background: #d9534f;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+        .logout button:hover {
+            background: #c9302c;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <a href="home.html" class="back">&larr; Back</a>
+
+    <h2>Cast Your Vote</h2>
+
+    <div id="statusBox">Checking election status...</div>
+
+    <div id="candidateList"></div>
+
+    <button id="voteBtn" style="display:none;">Cast Vote</button>
+
+    <div id="msg"></div>
+
+    <div class="logout">
+        <button id="logoutBtn">Logout</button>
+    </div>
+
+</div>
+
+
+<script>
+    const STATUS_API = "http://localhost:8000/election/status";
+    const CANDS_API = "http://localhost:8000/voter/candidates";
+    const VOTE_API  = "http://localhost:8000/voter/vote";
+
+    const token = localStorage.getItem("voter_token");
+
+    // Require login
+    if (!token) {
+        window.location.href = "login.html";
+    }
+
+    const statusBox = document.getElementById("statusBox");
+    const candidateList = document.getElementById("candidateList");
+    const voteBtn = document.getElementById("voteBtn");
+    const msgDiv = document.getElementById("msg");
+
+
+    // Load election status
+    async function loadStatus() {
+        try {
+            const res = await fetch(STATUS_API);
+            const data = await res.json();
+
+            statusBox.textContent = `Election Status: ${data.status}`;
+
+            if (data.status !== "ONGOING") {
+                voteBtn.style.display = "none";
+                msgDiv.textContent = "Voting is not available right now.";
+                msgDiv.className = "error";
+            } else {
+                voteBtn.style.display = "block";
+            }
+
+        } catch (err) {
+            statusBox.textContent = "Error fetching election status.";
+            msgDiv.textContent = "Network error.";
+            msgDiv.className = "error";
+        }
+    }
+
+
+    // Load candidates
+    async function loadCandidates() {
+        try {
+            const res = await fetch(CANDS_API, {
+                headers: { "Authorization": token }
+            });
+
+            const data = await res.json();
+
+            candidateList.innerHTML = "";
+
+            data.candidates.forEach(c => {
+                const row = document.createElement("div");
+                row.className = "candidate";
+
+                row.innerHTML = `
+                    <label>
+                        <input type="radio" name="candidate" value="${c.id}">
+                        ${c.name}
+                    </label>
+                `;
+
+                candidateList.appendChild(row);
+            });
+
+        } catch (err) {
+            msgDiv.textContent = "Failed to load candidates.";
+            msgDiv.className = "error";
+        }
+    }
+
+
+    // Cast vote
+    voteBtn.addEventListener("click", async () => {
+        const selected = document.querySelector("input[name='candidate']:checked");
+
+        if (!selected) {
+            msgDiv.textContent = "Please select a candidate.";
+            msgDiv.className = "error";
+            return;
+        }
+
+        const candidate_id = selected.value;
+
+        try {
+            const res = await fetch(`${VOTE_API}/${candidate_id}`, {
+                method: "POST",
+                headers: {
+                    "Authorization": token
+                }
+            });
+
+            const data = await res.json();
+
+            if (res.ok) {
+                msgDiv.textContent = "Vote cast successfully!";
+                msgDiv.className = "success";
+
+                setTimeout(() => {
+                    window.location.href = "home.html";
+                }, 800);
+
+            } else {
+                msgDiv.textContent = data.detail || "Vote failed.";
+                msgDiv.className = "error";
+            }
+
+        } catch (err) {
+            msgDiv.textContent = "Network error.";
+            msgDiv.className = "error";
+        }
+    });
+
+
+    // Logout
+    document.getElementById("logoutBtn").addEventListener("click", () => {
+        localStorage.removeItem("voter_token");
+        window.location.href = "login.html";
+    });
+
+    loadStatus();
+    loadCandidates();
+</script>
+
+</body>
+</html>
