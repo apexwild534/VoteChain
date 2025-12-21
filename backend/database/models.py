@@ -1,8 +1,7 @@
 from sqlalchemy import Column, Integer, String, Boolean, Enum
-from sqlalchemy.ext.declarative import declarative_base
 import enum
 
-Base = declarative_base()
+from .session import Base   # ✅ IMPORT THE SAME BASE
 
 
 class ElectionStatus(enum.Enum):
@@ -16,8 +15,8 @@ class Voter(Base):
 
     id = Column(Integer, primary_key=True, index=True)
 
-    voter_id = Column(String, unique=True, nullable=False)   # real ID used for login
-    voter_hash = Column(String, unique=True, nullable=False) # hashed ID stored for transactions
+    voter_id = Column(String, unique=True, nullable=False)
+    voter_hash = Column(String, unique=True, nullable=False)
 
     has_voted = Column(Boolean, default=False)
 
@@ -33,5 +32,4 @@ class ElectionState(Base):
     __tablename__ = "election_state"
 
     id = Column(Integer, primary_key=True, index=True)
-
     status = Column(Enum(ElectionStatus), default=ElectionStatus.NOT_STARTED)

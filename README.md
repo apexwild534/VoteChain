@@ -1,275 +1,309 @@
-
-# VoteChain  
-A Local-Network, Blockchain-Backed Voting System
-
-VoteChain is a lightweight, secure voting platform designed for controlled environments such as classrooms, labs, and local networks.  
-It provides a blockchain-based audit trail to ensure vote immutability and offers clear separation between administrator and voter functionalities.
-
-This repository contains backend services, frontend interfaces, blockchain logic, and testing tools.
-
-For detailed system behavior and deeper explanations, see **[Explanation.md](Explanation.md)**.  
-For usage rights and distribution terms, see **[LICENSE](License)**.
+# 🗳️ VoteChain  
+*A Blockchain-Backed Secure Voting System*
 
 ---
 
-## Overview
+## 📌 Overview
 
-VoteChain consists of:
-- A FastAPI backend for election logic, authentication, and blockchain operations.
-- A custom blockchain implementation that stores vote transactions.
-- A simple HTML/JS frontend for both administrators and voters.
-- A set of scripts for resetting elections, generating demo data, and development.
-- A full test suite covering authentication, blockchain, permissions, and voting flow.
+**VoteChain** is a local-network, blockchain-backed voting platform built using **FastAPI**, **SQLite**, and a **custom lightweight blockchain**.
 
----
+The system ensures:
+- **One person, one vote**
+- **Vote immutability** via blockchain
+- **Role-based access control** (Admin / Voter)
+- **Transparent and verifiable election results**
 
-# System Architecture Diagram
-```
-                     ┌──────────────────────────────────┐
-                     │             Frontend             │
-                     │  (HTML / JS, runs in browser)    │
-                     ├──────────────────────────────────┤
-                     │ Admin UI         │    Voter UI   │
-                     │ index.html       │  login.html   │
-                     │ manage_candidates│  vote.html    │
-                     │ results.html     │  results.html │
-                     └───────────▲──────┴──────▲────────┘
-                                 │             │
-                                 ▼             ▼
-                     ┌──────────────────────────────────┐
-                     │           FastAPI Backend        │
-                     ├──────────────────────────────────┤
-                     │ Authentication Routes            │
-                     │ Admin Routes                     │
-                     │ Voter Routes                     │
-                     │ Election State Machine           │
-                     └───────────▲──────────────────────┘
-                                 │
-                                 ▼
-                     ┌──────────────────────────────────┐
-                     │        Blockchain Engine         │
-                     ├──────────────────────────────────┤
-                     │ Block Creation                   │
-                     │ Vote Transactions                │
-                     │ Hash Linking (SHA-256)           │
-                     │ Chain Validation                 │
-                     │ Optional Persistence             │
-                     └───────────▲──────────────────────┘
-                                 │
-                                 ▼
-                     ┌──────────────────────────────────┐
-                     │           SQLite Database        │
-                     ├──────────────────────────────────┤
-                     │ Voters Table                     │
-                     │ Candidates Table                 │
-                     │ Election State Table             │
-                     └──────────────────────────────────┘
-
-```
+Votes are **not counted directly from the database**.  
+Instead, votes are sealed into blockchain blocks and results are computed **from the blockchain**, ensuring integrity.
 
 ---
 
-# Blockchain Flow Diagram
+## 🧠 Core Concepts
 
-```
-
-+------------------+
-| Voter Casts Vote |
-+--------+---------+
-|
-v
-+--------------------------+
-| VoteTransaction(v → c)  |
-+--------------------------+
-|
-v
-+--------------------------+
-| Added to mempool        |
-| (current_transactions)   |
-+--------------------------+
-|
-v
-+--------------------------+
-|    Block Mined           |
-+--------------------------+
-| index                    |
-| timestamp                |
-| transactions (votes)     |
-| previous_hash            |
-| hash                     |
-+--------------------------+
-|
-v
-+--------------------------+
-|     Appended to Chain    |
-+--------------------------+
-
-```
+- **Database** → stores voters, candidates, and election state  
+- **Blockchain** → stores immutable vote transactions  
+- **JWT Authentication** → enforces role-based access  
+- **FastAPI** → REST API with interactive Swagger UI  
 
 ---
 
-# Directory Structure
+## 🏗️ System Architecture
 
 ```
 
-Votechain/
+┌──────────────┐
+│   Frontend   │ (Swagger / API Clients)
+└──────┬───────┘
+│ HTTP
+┌──────▼───────┐
+│  FastAPI App │
+│──────────────│
+│ Auth (JWT)   │
+│ Admin Routes │
+│ Voter Routes │
+└──────┬───────┘
 │
+┌─────▼───────┐        ┌─────────────────┐
+│   Database  │        │   Blockchain     │
+│ (SQLite)    │◄──────►│  (In-Memory)     │
+│──────────── │        │─────────────────│
+│ voters      │        │ blocks           │
+│ candidates  │        │ transactions     │
+│ election    │        │ hashes           │
+└─────────────┘        └─────────────────┘
+
+```
+
+---
+
+## 🔗 Blockchain Design
+
+- **Genesis Block** created at startup
+- **VoteTransaction**
+  - `voter_hash` (SHA-256 anonymized)
+  - `candidate_id`
+- Votes are **queued** during election
+- On election end → votes are **mined into a block**
+- Blocks are chained using `previous_hash`
+
+```
+
+[ Genesis ]
+↓
+[ Block 1 ]
+(votes)
+↓
+[ Block 2 ]
+(votes)
+
+```
+
+---
+
+## 🔐 Authentication & Roles
+
+| Role   | Permissions |
+|------|------------|
+| Admin | Manage candidates, start/end election, view results |
+| Voter | View candidates, cast vote, view results |
+
+Authentication uses **JWT tokens** passed as query parameters (local trusted setup).
+
+---
+
+## 🗂️ Project Structure
+
+```
+
+VoteChain/
 ├── backend/
 │   ├── app.py
-│   ├── config.py
 │   ├── routes/
+│   │   ├── admin_routes.py
+│   │   ├── voter_routes.py
+│   │   └── auth.py
 │   ├── database/
+│   │   ├── models.py
+│   │   ├── session.py
+│   │   └── crud.py
 │   ├── blockchain/
-│   ├── security/
-│   ├── utils/
-│   ├── scripts/
-│   └── tests/
+│   │   ├── chain.py
+│   │   ├── block.py
+│   │   ├── transaction.py
+│   │   └── consensus.py
+│   └── data/
+│       └── votechain.db
 │
-├── frontend/
-│   ├── admin/
-│   ├── voter/
-│   ├── components/
-│   └── static/
-│
-├── startup.sh
-├── run.sh
-├── requirements.txt
+├── .env
 ├── README.md
-├── [Explanation.md](Explanation.md)
-└── [LICENSE](License)
+├── Explanation.md
+└── LICENSE
 
 ````
-
-For detailed explanations of architectural decisions, refer to **[Explanation.md](Explanation.md)**.
 
 ---
 
-# Installation
+## ⚙️ Environment Configuration (`.env`)
 
-### 1. Clone Repository
-
-```bash
-git clone https://github.com/user/VoteChain.git
-cd VoteChain
+```env
+VOTECHAIN_ENV=development
+VOTECHAIN_DB=sqlite:///data/votechain.db
+VOTECHAIN_SECRET_KEY=supersecretchangeme
+VOTECHAIN_ADMIN_PASSWORD=admin123
 ````
 
-### 2. Create Virtual Environment
+---
+
+## 🚀 How to Run the Project
+
+### 1️⃣ Create Virtual Environment
 
 ```bash
 python3 -m venv venv
 source venv/bin/activate
 ```
 
-### 3. Install Dependencies
+### 2️⃣ Install Dependencies
 
 ```bash
-pip install -r requirements.txt
+pip install fastapi uvicorn sqlalchemy PyJWT
 ```
 
-### 4. Start Backend
+### 3️⃣ Load Environment Variables
 
 ```bash
-./startup.sh
+set -a
+source .env
+set +a
 ```
 
-Subsequent runs:
+### 4️⃣ Initialize Database
 
 ```bash
-./run.sh
+python3 - << 'EOF'
+from backend.database.session import Base, engine
+Base.metadata.create_all(bind=engine)
+print("Database initialized")
+EOF
 ```
 
-Backend available at:
+### 5️⃣ Start Server
+
+```bash
+uvicorn backend.app:app --reload
+```
+
+### 6️⃣ Open Swagger UI
 
 ```
-http://localhost:8000
-```
-
-API documentation:
-
-```
-http://localhost:8000/docs
+http://127.0.0.1:8000/docs
 ```
 
 ---
 
-# Working with Scripts
+## 🧪 How to Use the System (End-to-End)
 
-### Generate Test Data
+### 🔑 Admin Flow
 
-```bash
-python -m backend.scripts.generate_test_data
-```
-
-### Reset Blockchain + Election
-
-```bash
-python -m backend.scripts.reset_chain
-```
-
----
-
-# Running Tests
-
-```bash
-pytest backend/tests -v
-```
-
-Includes:
-
-* Authentication tests
-* Permission enforcement
-* Blockchain integrity tests
-* Full voting workflow tests
-
----
-
-# API Summary
-
-### Authentication
+1. **Login**
 
 ```
-POST /admin/login
-POST /voter/login
+POST /admin/login?password=admin123
 ```
 
-### Admin
+2. **Add Candidates**
+
+```
+POST /admin/candidate/add?name=Alice
+POST /admin/candidate/add?name=Bob
+```
+
+3. **Start Election**
 
 ```
 POST /admin/election/start
+```
+
+---
+
+### 👤 Voter Flow
+
+1. **Register**
+
+```
+POST /voter/register?voter_id=voter1
+```
+
+2. **Login**
+
+```
+POST /voter/login?voter_id=voter1
+```
+
+3. **View Candidates**
+
+```
+GET /voter/candidates?token=JWT_TOKEN
+```
+
+4. **Cast Vote**
+
+```
+POST /voter/vote/{candidate_id}?token=JWT_TOKEN
+```
+
+---
+
+### 🧮 Results
+
+5. **End Election (Admin)**
+
+```
 POST /admin/election/end
-GET  /admin/results
-GET  /admin/voters
-POST /admin/candidate/add
-PUT  /admin/candidate/update/{id}
-DELETE /admin/candidate/delete/{id}
-GET  /admin/blockchain
 ```
 
-### Voter
+6. **View Results**
 
 ```
-GET  /voter/candidates
-POST /voter/vote/{candidate_id}
-GET  /voter/results
+GET /admin/results
+GET /voter/results?token=JWT_TOKEN
 ```
 
-### Public
+Results are computed **from blockchain data**, not database rows.
+
+---
+
+## 📊 Election Flow Diagram
 
 ```
-GET /election/status
+Admin starts election
+        ↓
+Voters register & login
+        ↓
+Voters cast votes
+        ↓
+Votes added as transactions
+        ↓
+Admin ends election
+        ↓
+Votes mined into blockchain
+        ↓
+Results calculated from blockchain
 ```
 
 ---
 
-# LICENSE
+## 🛡️ Security Considerations
 
-This project is distributed under the terms of the **[LICENSE](License)** file included in the repository.
+* Voter identity is **hashed** before blockchain storage
+* Database never stores vote-candidate mapping
+* Blockchain prevents vote tampering
+* Role enforcement via JWT
 
 ---
 
-# Documentation
+## 📄 Documentation
 
-For a full breakdown of the blockchain, election lifecycle, authentication logic, and system decisions, see:
+* 📘 **Detailed Explanation** → [`Explanation.md`](./Explanation.md)
+* 📜 **License** → [`LICENSE`](./LICENSE)
 
-**[Explanation.md](Explanation.md)**
+---
 
+## 🧠 Educational Value
+
+This project demonstrates:
+
+* REST API design
+* Blockchain fundamentals
+* Secure authentication
+* Database + blockchain hybrid architecture
+* Real-world debugging and system integration
+
+---
+
+## 🏁 Final Notes
+
+VoteChain is designed for **academic, local, and experimental use**.
+It intentionally avoids heavy consensus mechanisms (PoW/PoS) to remain understandable and lightweight.
+
+---

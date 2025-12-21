@@ -19,7 +19,7 @@ class Blockchain:
         self.current_transactions = []
 
         # simple local consensus engine
-        self.consensus = ConsensusEngine()
+        self.consensus = ConsensusEngine(self)
 
         # initialize genesis
         self.create_genesis_block()

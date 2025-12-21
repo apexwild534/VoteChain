@@ -1,4 +1,7 @@
-from .chain import Blockchain
+from typing import List, TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from .chain import Blockchain
 
 
 class ConsensusEngine:
@@ -10,44 +13,42 @@ class ConsensusEngine:
     It handles:
       - validating chains
       - resolving forks by choosing the longest valid chain
-      - providing a hook to plug in more advanced consensus protocols later
+      - safe block addition
     """
 
-    def __init__(self):
-        # In a multi-node setup, each node would have its own chain
-        self.local_chain = Blockchain()
+    def __init__(self, blockchain):
+        # blockchain is an INSTANCE, not the class
+        self.local_chain = blockchain
 
     # --------------------------------------------------------
     # CHAIN VALIDATION
     # --------------------------------------------------------
 
-    def validate_chain(self, chain: Blockchain) -> bool:
+    def validate_chain(self, chain) -> bool:
         """
-        Ensures a candidate chain is valid:
-          - hashes intact
-          - proper previous_hash linking
-          - genesis block integrity
+        Ensures a candidate chain is valid.
         """
         return chain.is_chain_valid()
 
     # --------------------------------------------------------
-    # FORK RESOLUTION: LONGEST RULE
+    # FORK RESOLUTION: LONGEST VALID CHAIN WINS
     # --------------------------------------------------------
 
-    def resolve_conflicts(self, candidate_chains: list[Blockchain]):
+    def resolve_conflicts(self, candidate_chains: List["Blockchain"]) -> bool:
         """
-        Accepts a list of chains from other nodes (if any).
-        Picks the longest **valid** chain.
+        Picks the longest valid chain from candidates.
         """
         longest_chain = self.local_chain
         max_length = len(self.local_chain.chain)
 
         for chain in candidate_chains:
-            if len(chain.chain) > max_length and self.validate_chain(chain):
+            if (
+                len(chain.chain) > max_length
+                and self.validate_chain(chain)
+            ):
                 longest_chain = chain
                 max_length = len(chain.chain)
 
-        # If a longer, valid chain is found, adopt it
         if longest_chain is not self.local_chain:
             self.local_chain = longest_chain
             return True
@@ -55,20 +56,18 @@ class ConsensusEngine:
         return False
 
     # --------------------------------------------------------
-    # ADD BLOCK TO LOCAL CHAIN SAFELY
+    # ADD BLOCK SAFELY
     # --------------------------------------------------------
 
-    def add_block_to_chain(self, block):
+    def add_block_to_chain(self, block) -> bool:
         """
-        Only append block if previous_hash matches last block.
-        Prevents tampering and accidental forks.
+        Appends block only if it correctly follows the last block.
         """
         last_block = self.local_chain.chain[-1]
 
         if block.previous_hash != last_block.hash:
             return False
 
-        # Final integrity check
         if block.hash != block.compute_hash():
             return False
 
@@ -76,11 +75,8 @@ class ConsensusEngine:
         return True
 
     # --------------------------------------------------------
-    # GET LOCAL CHAIN
+    # ACCESSOR
     # --------------------------------------------------------
 
-    def get_chain(self) -> Blockchain:
-        """
-        Returns the authoritative local chain.
-        """
+    def get_chain(self):
         return self.local_chain

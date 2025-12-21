@@ -29,11 +29,11 @@ DATABASE_URL = os.getenv(
 
 SECRET_KEY = os.getenv("VOTECHAIN_SECRET_KEY", "VOTECHAIN_LOCAL_SECRET")
 ALGORITHM = "HS256"
-TOKEN_EXPIRE_SECONDS = 60 * 60 * 12    # 12 hours, adjustable
+TOKEN_EXPIRE_SECONDS = 60 * 60 * 12    # 12 hours
 
 
 # --------------------------------------------------------
-# ADMIN CREDENTIALS (can move to DB later)
+# ADMIN CREDENTIALS
 # --------------------------------------------------------
 
 ADMIN_PASSWORD = os.getenv("VOTECHAIN_ADMIN_PASSWORD", "admin123")
@@ -43,8 +43,8 @@ ADMIN_PASSWORD = os.getenv("VOTECHAIN_ADMIN_PASSWORD", "admin123")
 # BLOCKCHAIN CONFIG
 # --------------------------------------------------------
 
-CHAIN_FILE = DATA_DIR / "chain.json"       # future persistence
-AUTO_MINE_ON_END = True                    # mine block automatically when election ends
+CHAIN_FILE = DATA_DIR / "chain.json"
+AUTO_MINE_ON_END = True
 GENESIS_PREVIOUS_HASH = "0"
 
 
@@ -52,11 +52,11 @@ GENESIS_PREVIOUS_HASH = "0"
 # ENVIRONMENT MODE
 # --------------------------------------------------------
 
-ENV = os.getenv("VOTECHAIN_ENV", "development")   # "development" or "production"
+ENV = os.getenv("VOTECHAIN_ENV", "development")
 
 
 # --------------------------------------------------------
-# FRONTEND CONFIG (if hosting static files)
+# FRONTEND CONFIG
 # --------------------------------------------------------
 
 STATIC_DIR = BASE_DIR / "frontend" / "static"
