@@ -43,6 +43,9 @@ def mark_voter_as_voted(db: Session, voter_id: str):
     db.commit()
     return True
 
+def get_all_voters(db: Session):
+    return db.query(Voter).all()
+
 
 # -----------------------------
 # CANDIDATES

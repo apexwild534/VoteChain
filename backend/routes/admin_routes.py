@@ -226,3 +226,20 @@ def admin_clear_election(
     set_election_status(db, ElectionStatus.NOT_STARTED)
 
     return {"message": "Election cleared and system reset"}
+
+
+#View Voters
+@router.get("/voters")
+def admin_view_voters(
+    db: Session = Depends(get_db),
+    _: bool = Depends(verify_admin)
+):
+    voters = get_all_voters(db)
+
+    return [
+        {
+            "voter_id": v.voter_id
+        }
+        for v in voters
+    ]
+
