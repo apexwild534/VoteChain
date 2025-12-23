@@ -7,9 +7,7 @@ echo "=========================================="
 # Stop on error
 set -e
 
-# ------------------------------------------
 # 1. Activate Virtual Environment
-# ------------------------------------------
 
 if [ -d "venv" ]; then
     echo "[*] Activating virtual environment..."
@@ -23,9 +21,7 @@ else
     pip install fastapi uvicorn sqlalchemy pydantic jwt
 fi
 
-# ------------------------------------------
 # 2. Ensure database exists
-# ------------------------------------------
 
 echo "[*] Initializing database tables..."
 python3 - << 'EOF'
@@ -34,9 +30,7 @@ Base.metadata.create_all(bind=engine)
 print("[+] Database ready.")
 EOF
 
-# ------------------------------------------
 # 3. Launch the Backend Server
-# ------------------------------------------
 
 echo "[*] Starting VoteChain backend..."
 echo "------------------------------------------"

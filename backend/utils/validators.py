@@ -1,9 +1,7 @@
 from fastapi import HTTPException
 
 
-# --------------------------------------------------------
 # BASIC STRING VALIDATION
-# --------------------------------------------------------
 
 def require_non_empty(value: str, field_name: str):
     """
@@ -29,9 +27,7 @@ def require_length(value: str, field_name: str, min_len=1, max_len=100):
     return value
 
 
-# --------------------------------------------------------
 # VOTER ID VALIDATION
-# --------------------------------------------------------
 
 def validate_voter_id(voter_id: str):
     """
@@ -52,9 +48,7 @@ def validate_voter_id(voter_id: str):
     return voter_id
 
 
-# --------------------------------------------------------
 # CANDIDATE NAME VALIDATION
-# --------------------------------------------------------
 
 def validate_candidate_name(name: str):
     """
@@ -74,9 +68,7 @@ def validate_candidate_name(name: str):
     return name.strip()
 
 
-# --------------------------------------------------------
 # ELECTION STATUS VALIDATION
-# --------------------------------------------------------
 
 def validate_election_action(status, action: str):
     """

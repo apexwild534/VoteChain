@@ -1,9 +1,7 @@
 from typing import List
 
 
-# --------------------------------------------------------
 # VOTER SERIALIZERS
-# --------------------------------------------------------
 
 def voter_to_dict(voter):
     """
@@ -21,9 +19,7 @@ def voters_list_to_dict(voters: List):
     return [voter_to_dict(v) for v in voters]
 
 
-# --------------------------------------------------------
 # CANDIDATE SERIALIZERS
-# --------------------------------------------------------
 
 def candidate_to_dict(candidate):
     return {
@@ -36,9 +32,7 @@ def candidates_list_to_dict(candidates: List):
     return [candidate_to_dict(c) for c in candidates]
 
 
-# --------------------------------------------------------
 # ELECTION RESULTS SERIALIZER
-# --------------------------------------------------------
 
 def election_result_entry(name: str, votes: int, pct_votes: float, pct_registered: float):
     """
@@ -63,9 +57,7 @@ def full_election_results(total_votes: int, turnout_pct: float, rows: List[dict]
     }
 
 
-# --------------------------------------------------------
 # BLOCKCHAIN SERIALIZERS
-# --------------------------------------------------------
 
 def transaction_to_dict(tx):
     """
@@ -99,9 +91,7 @@ def chain_to_dict(chain):
     return [block_to_dict(b) for b in chain.chain]
 
 
-# --------------------------------------------------------
 # STANDARD API WRAPPERS
-# --------------------------------------------------------
 
 def success(message: str, data=None):
     return {

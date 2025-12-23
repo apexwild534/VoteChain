@@ -2,9 +2,7 @@ from fastapi import HTTPException
 from ..routes.auth import get_current_user
 
 
-# --------------------------------------------------------
 # REQUIRE ADMIN ACCESS
-# --------------------------------------------------------
 
 def require_admin(token: str = ""):
     """
@@ -19,9 +17,7 @@ def require_admin(token: str = ""):
     return True
 
 
-# --------------------------------------------------------
 # REQUIRE VOTER ACCESS
-# --------------------------------------------------------
 
 def require_voter(token: str = ""):
     """
@@ -36,9 +32,7 @@ def require_voter(token: str = ""):
     return identity   # voter_id
 
 
-# --------------------------------------------------------
 # REQUIRE EITHER ROLE (READ-ONLY ACCESS)
-# --------------------------------------------------------
 
 def require_any_user(token: str = ""):
     """

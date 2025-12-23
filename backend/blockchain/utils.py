@@ -3,9 +3,7 @@ import json
 import time
 
 
-# --------------------------------------------------------
 # SHA-256 HASHING
-# --------------------------------------------------------
 
 def sha256_hash(data) -> str:
     """
@@ -20,9 +18,7 @@ def sha256_hash(data) -> str:
     return hashlib.sha256(json_string).hexdigest()
 
 
-# --------------------------------------------------------
 # JSON-READY SERIALIZATION
-# --------------------------------------------------------
 
 def serialize_transactions(transactions):
     """
@@ -34,9 +30,7 @@ def serialize_transactions(transactions):
     return [tx.to_dict() for tx in transactions]
 
 
-# --------------------------------------------------------
 # TIMESTAMP UTILITY
-# --------------------------------------------------------
 
 def current_timestamp() -> float:
     """
@@ -48,9 +42,7 @@ def current_timestamp() -> float:
     return time.time()
 
 
-# --------------------------------------------------------
 # BLOCK DATA NORMALIZER
-# --------------------------------------------------------
 
 def prepare_block_data(index, timestamp, transactions, previous_hash):
     """

@@ -18,16 +18,12 @@ from ..blockchain.chain import Blockchain
 from ..routes.auth import get_current_user, admin_login
 
 
-# ------------------------------------------------
 # ROUTER
-# ------------------------------------------------
 
 router = APIRouter(prefix="/admin", tags=["Admin"])
 
 
-# ------------------------------------------------
 # AUTH: ADMIN LOGIN
-# ------------------------------------------------
 
 @router.post("/login")
 def admin_login_route(password: str):
@@ -37,9 +33,7 @@ def admin_login_route(password: str):
     return admin_login(password)
 
 
-# ------------------------------------------------
 # AUTH GUARD
-# ------------------------------------------------
 
 def verify_admin(token: str = ""):
     """
@@ -51,16 +45,12 @@ def verify_admin(token: str = ""):
     return True
 
 
-# ------------------------------------------------
 # LOCAL BLOCKCHAIN INSTANCE (in-memory)
-# ------------------------------------------------
 
 blockchain = Blockchain()
 
 
-# ------------------------------------------------
 # CANDIDATE MANAGEMENT
-# ------------------------------------------------
 
 @router.post("/candidate/add")
 def admin_add_candidate(
@@ -96,9 +86,7 @@ def admin_update_candidate(
     return candidate
 
 
-# ------------------------------------------------
 # VIEW REGISTERED VOTERS (COUNT ONLY)
-# ------------------------------------------------
 
 @router.get("/voters/count")
 def admin_voter_count(
@@ -109,9 +97,7 @@ def admin_voter_count(
     return {"registered_voters": len(voters)}
 
 
-# ------------------------------------------------
 # VIEW CANDIDATES
-# ------------------------------------------------
 
 @router.get("/candidates")
 def admin_candidates(
@@ -121,9 +107,7 @@ def admin_candidates(
     return get_all_candidates(db)
 
 
-# ------------------------------------------------
 # START ELECTION
-# ------------------------------------------------
 
 @router.post("/election/start")
 def admin_start_election(
@@ -145,9 +129,7 @@ def admin_start_election(
     return {"message": "Election started"}
 
 
-# ------------------------------------------------
 # END ELECTION (MINES BLOCK)
-# ------------------------------------------------
 
 @router.post("/election/end")
 def admin_end_election(
@@ -165,9 +147,7 @@ def admin_end_election(
     return {"message": "Election ended and votes sealed into blockchain"}
 
 
-# ------------------------------------------------
 # VIEW RESULTS (POST-ELECTION)
-# ------------------------------------------------
 
 @router.get("/results")
 def admin_view_results(
@@ -210,9 +190,7 @@ def admin_view_results(
     }
 
 
-# ------------------------------------------------
 # CLEAR ELECTION
-# ------------------------------------------------
 
 @router.post("/election/clear")
 def admin_clear_election(

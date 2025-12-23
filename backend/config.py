@@ -2,9 +2,7 @@ import os
 from pathlib import Path
 
 
-# --------------------------------------------------------
 # BASE PROJECT PATHS
-# --------------------------------------------------------
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -12,9 +10,7 @@ DATA_DIR = BASE_DIR / "data"
 DATA_DIR.mkdir(exist_ok=True)
 
 
-# --------------------------------------------------------
 # DATABASE CONFIG
-# --------------------------------------------------------
 
 # SQLite for local deployments
 DATABASE_URL = os.getenv(
@@ -23,41 +19,31 @@ DATABASE_URL = os.getenv(
 )
 
 
-# --------------------------------------------------------
 # JWT / SECURITY CONFIG
-# --------------------------------------------------------
 
 SECRET_KEY = os.getenv("VOTECHAIN_SECRET_KEY", "VOTECHAIN_LOCAL_SECRET")
 ALGORITHM = "HS256"
 TOKEN_EXPIRE_SECONDS = 60 * 60 * 12    # 12 hours
 
 
-# --------------------------------------------------------
 # ADMIN CREDENTIALS
-# --------------------------------------------------------
 
 ADMIN_PASSWORD = os.getenv("VOTECHAIN_ADMIN_PASSWORD", "admin123")
 
 
-# --------------------------------------------------------
 # BLOCKCHAIN CONFIG
-# --------------------------------------------------------
 
 CHAIN_FILE = DATA_DIR / "chain.json"
 AUTO_MINE_ON_END = True
 GENESIS_PREVIOUS_HASH = "0"
 
 
-# --------------------------------------------------------
 # ENVIRONMENT MODE
-# --------------------------------------------------------
 
 ENV = os.getenv("VOTECHAIN_ENV", "development")
 
 
-# --------------------------------------------------------
 # FRONTEND CONFIG
-# --------------------------------------------------------
 
 STATIC_DIR = BASE_DIR / "frontend" / "static"
 TEMPLATES_DIR = BASE_DIR / "frontend" / "templates"

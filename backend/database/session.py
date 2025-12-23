@@ -3,9 +3,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, declarative_base
 
 
-# --------------------------------------------------------
 # DATABASE CONFIGURATION
-# --------------------------------------------------------
 
 DATABASE_URL = os.getenv(
     "VOTECHAIN_DB",
@@ -26,9 +24,7 @@ SessionLocal = sessionmaker(
 Base = declarative_base()
 
 
-# --------------------------------------------------------
 # SESSION DEPENDENCY FOR FASTAPI
-# --------------------------------------------------------
 
 def get_db():
     """

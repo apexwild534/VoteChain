@@ -9,9 +9,7 @@ from backend.database.crud import add_voter
 client = TestClient(app)
 
 
-# ---------------------------------------
 # Helper: Create test voter
-# ---------------------------------------
 
 @pytest.fixture(scope="module", autouse=True)
 def setup_test_voter():
@@ -20,9 +18,7 @@ def setup_test_voter():
     db.close()
 
 
-# ---------------------------------------
 # Admin Login Tests
-# ---------------------------------------
 
 def test_admin_login_success():
     res = client.post("/admin/login?password=admin123")
@@ -35,9 +31,7 @@ def test_admin_login_failure():
     assert res.status_code == 401
 
 
-# ---------------------------------------
 # Voter Login Tests
-# ---------------------------------------
 
 def test_voter_login_success():
     res = client.post("/voter/login?voter_id=TESTVOTER")
@@ -50,9 +44,7 @@ def test_voter_login_invalid():
     assert res.status_code in [400, 404]   # depending on your implementation
 
 
-# ---------------------------------------
 # Permission & Token Tests
-# ---------------------------------------
 
 def test_voter_cannot_access_admin_route():
     # login voter

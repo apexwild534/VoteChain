@@ -5,18 +5,14 @@ from backend.blockchain.utils import sha256_hash
 from backend.blockchain.block import Block
 
 
-# ---------------------------------------------------------
 # FIXTURE: Fresh blockchain for every test
-# ---------------------------------------------------------
 
 @pytest.fixture
 def chain():
     return Blockchain()
 
 
-# ---------------------------------------------------------
 # GENESIS BLOCK TESTS
-# ---------------------------------------------------------
 
 def test_genesis_block_exists(chain):
     assert len(chain.chain) == 1
@@ -34,9 +30,7 @@ def test_genesis_block_hash_is_valid(chain):
     assert genesis.hash == recalculated
 
 
-# ---------------------------------------------------------
 # TRANSACTION + MINING TESTS
-# ---------------------------------------------------------
 
 def test_add_transaction(chain):
     tx = VoteTransaction(voter_hash="hash1", candidate_id=1)
@@ -67,9 +61,7 @@ def test_mining_clears_pending_transactions(chain):
     assert chain.current_transactions == []
 
 
-# ---------------------------------------------------------
 # CHAIN VALIDATION TESTS
-# ---------------------------------------------------------
 
 def test_chain_valid_initially(chain):
     assert chain.is_chain_valid() == True
@@ -97,9 +89,7 @@ def test_data_tampering_breaks_hash(chain):
     assert chain.is_chain_valid() == False
 
 
-# ---------------------------------------------------------
 # HASH CONSISTENCY TEST
-# ---------------------------------------------------------
 
 def test_hash_is_deterministic():
     data = {"index": 1, "value": "test"}
@@ -110,9 +100,7 @@ def test_hash_is_deterministic():
     assert isinstance(h1, str)
 
 
-# ---------------------------------------------------------
 # CONSENSUS TEST (BASIC LONGEST CHAIN)
-# ---------------------------------------------------------
 
 def test_consensus_picks_longest_chain(chain):
     # Base chain has 1 block (genesis)

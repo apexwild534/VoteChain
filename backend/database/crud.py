@@ -3,9 +3,7 @@ from .models import Voter, Candidate, ElectionState, ElectionStatus
 from sqlalchemy.exc import IntegrityError
 
 
-# -----------------------------
 # VOTERS
-# -----------------------------
 
 def register_voter(db: Session, voter_id: str, voter_hash: str):
     """
@@ -47,9 +45,7 @@ def get_all_voters(db: Session):
     return db.query(Voter).all()
 
 
-# -----------------------------
 # CANDIDATES
-# -----------------------------
 
 def add_candidate(db: Session, name: str):
     candidate = Candidate(name=name)
@@ -84,9 +80,7 @@ def get_all_candidates(db: Session):
     return db.query(Candidate).all()
 
 
-# -----------------------------
 # ELECTION STATE
-# -----------------------------
 
 def get_election_state(db: Session):
     """

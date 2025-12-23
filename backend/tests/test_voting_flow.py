@@ -7,9 +7,7 @@ from backend.database.crud import add_voter, add_candidate
 client = TestClient(app)
 
 
-# ---------------------------------------------------------
 # FIXTURE: Setup election with sample data
-# ---------------------------------------------------------
 
 @pytest.fixture(scope="module", autouse=True)
 def setup_data():
@@ -32,9 +30,7 @@ def setup_data():
     db.close()
 
 
-# ---------------------------------------------------------
 # Helper fixtures
-# ---------------------------------------------------------
 
 @pytest.fixture
 def admin_token():
@@ -50,9 +46,7 @@ def voter_token():
     return res.json()["token"]
 
 
-# ---------------------------------------------------------
 # VOTING FLOW TESTS
-# ---------------------------------------------------------
 
 def test_start_election(admin_token):
     """Admin starts the election."""

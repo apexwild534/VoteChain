@@ -4,9 +4,7 @@ from backend.database.models import Voter, Candidate
 from backend.database.crud import add_candidate, add_voter
 
 
-# --------------------------------------------------------
 # CONFIG
-# --------------------------------------------------------
 
 NUM_VOTERS = 20
 CANDIDATE_NAMES = [
@@ -16,9 +14,7 @@ CANDIDATE_NAMES = [
 ]
 
 
-# --------------------------------------------------------
 # MAIN
-# --------------------------------------------------------
 
 def clear_old_data(db: Session):
     db.query(Voter).delete()

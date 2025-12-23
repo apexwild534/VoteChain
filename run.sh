@@ -7,9 +7,7 @@ echo "=========================================="
 # Stop on error
 set -e
 
-# ------------------------------------------
 # Activate virtual environment
-# ------------------------------------------
 if [ -d "venv" ]; then
     echo "[*] Activating virtual environment..."
     source venv/bin/activate
@@ -19,9 +17,7 @@ else
     exit 1
 fi
 
-# ------------------------------------------
 # Start FastAPI server
-# ------------------------------------------
 
 echo "[*] Running API Server..."
 echo "------------------------------------------"

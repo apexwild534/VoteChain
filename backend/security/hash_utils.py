@@ -3,9 +3,7 @@ import os
 import hmac
 
 
-# --------------------------------------------------------
 # BASIC SHA-256 HASH (good for anonymizing voter IDs)
-# --------------------------------------------------------
 
 def sha256_hash(text: str) -> str:
     """
@@ -16,9 +14,7 @@ def sha256_hash(text: str) -> str:
     return hashlib.sha256(text.encode()).hexdigest()
 
 
-# --------------------------------------------------------
 # SALTED HASH (for passwords, if needed)
-# --------------------------------------------------------
 
 def generate_salt(length: int = 16) -> str:
     """
@@ -34,9 +30,7 @@ def salted_hash(password: str, salt: str) -> str:
     return hashlib.sha256((password + salt).encode()).hexdigest()
 
 
-# --------------------------------------------------------
 # CONSTANT-TIME HASH COMPARISON
-# --------------------------------------------------------
 
 def safe_compare(hash1: str, hash2: str) -> bool:
     """
@@ -46,9 +40,7 @@ def safe_compare(hash1: str, hash2: str) -> bool:
     return hmac.compare_digest(hash1, hash2)
 
 
-# --------------------------------------------------------
 # PASSWORD VERIFICATION HELPER
-# --------------------------------------------------------
 
 def verify_password(password: str, salt: str, stored_hash: str) -> bool:
     """

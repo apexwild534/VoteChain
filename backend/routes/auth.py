@@ -14,9 +14,7 @@ SECRET_KEY = "VOTECHAIN_LOCAL_SECRET"
 ALGORITHM = "HS256"
 
 
-# ------------------------------------------------
 # HELPER: hash a voter_id for blockchain anonymity
-# ------------------------------------------------
 def hash_voter_id(voter_id: str) -> str:
     """
     Hash the voter's login ID using SHA-256.
@@ -25,9 +23,7 @@ def hash_voter_id(voter_id: str) -> str:
     return hashlib.sha256(voter_id.encode()).hexdigest()
 
 
-# ------------------------------------------------
 # HELPER: create JWT token
-# ------------------------------------------------
 def create_token(identity: str, role: str):
     """
     identity = voter_id or 'admin'
@@ -41,9 +37,7 @@ def create_token(identity: str, role: str):
     return jwt.encode(payload, SECRET_KEY, algorithm=ALGORITHM)
 
 
-# ------------------------------------------------
 # ADMIN LOGIN (simple password)
-# ------------------------------------------------
 def admin_login(password: str):
     """
     Local-only admin login.
@@ -58,9 +52,7 @@ def admin_login(password: str):
     return {"token": token}
 
 
-# ------------------------------------------------
 # VOTER LOGIN
-# ------------------------------------------------
 def voter_login(voter_id: str, db: Session = Depends(get_db)):
     """
     Voter logs in using their voter_id.
@@ -74,9 +66,7 @@ def voter_login(voter_id: str, db: Session = Depends(get_db)):
     return {"token": token}
 
 
-# ------------------------------------------------
 # TOKEN DECODER (admin or voter)
-# ------------------------------------------------
 def get_current_user(token: str):
     """
     Decode token and return identity + role.

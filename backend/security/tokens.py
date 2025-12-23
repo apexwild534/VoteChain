@@ -3,17 +3,13 @@ import jwt
 from fastapi import HTTPException
 
 
-# --------------------------------------------------------
 # JWT CONFIG
-# --------------------------------------------------------
 
 SECRET_KEY = "VOTECHAIN_LOCAL_SECRET"   # replace with env variable in prod
 ALGORITHM = "HS256"
 
 
-# --------------------------------------------------------
 # CREATE TOKEN
-# --------------------------------------------------------
 
 def create_token(identity: str, role: str) -> str:
     """
@@ -30,9 +26,7 @@ def create_token(identity: str, role: str) -> str:
     return jwt.encode(payload, SECRET_KEY, algorithm=ALGORITHM)
 
 
-# --------------------------------------------------------
 # DECODE TOKEN
-# --------------------------------------------------------
 
 def decode_token(token: str):
     """
@@ -48,18 +42,14 @@ def decode_token(token: str):
         raise HTTPException(status_code=401, detail="Invalid token")
 
 
-# --------------------------------------------------------
 # QUICK VALIDATOR: CONFIRM ADMIN
-# --------------------------------------------------------
 
 def is_admin(token: str) -> bool:
     identity, role = decode_token(token)
     return role == "admin"
 
 
-# --------------------------------------------------------
 # QUICK VALIDATOR: CONFIRM VOTER
-# --------------------------------------------------------
 
 def is_voter(token: str):
     """

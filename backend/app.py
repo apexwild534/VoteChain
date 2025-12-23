@@ -10,9 +10,7 @@ from .routes.election import router as election_router
 from .database.session import Base, engine
 
 
-# --------------------------------------------------------
 # Initialize Database
-# --------------------------------------------------------
 
 def create_tables():
     """
@@ -21,9 +19,7 @@ def create_tables():
     Base.metadata.create_all(bind=engine)
 
 
-# --------------------------------------------------------
 # FastAPI App
-# --------------------------------------------------------
 
 app = FastAPI(
     title="VoteChain",
@@ -41,18 +37,14 @@ app.add_middleware(
 )
 
 
-# --------------------------------------------------------
 # Attach Routes
-# --------------------------------------------------------
 
 app.include_router(admin_router)
 app.include_router(voter_router)
 app.include_router(election_router)
 
 
-# --------------------------------------------------------
 # Startup Hook
-# --------------------------------------------------------
 
 @app.on_event("startup")
 def startup():
@@ -60,9 +52,7 @@ def startup():
     print("[VoteChain] Database initialized. Server ready.")
 
 
-# --------------------------------------------------------
 # Root Test Endpoint
-# --------------------------------------------------------
 
 @app.get("/")
 def root():

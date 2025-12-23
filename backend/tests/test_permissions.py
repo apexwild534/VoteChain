@@ -6,9 +6,7 @@ from backend.app import app
 client = TestClient(app)
 
 
-# ------------------------------------------------------
 # Helper: Get valid tokens
-# ------------------------------------------------------
 
 @pytest.fixture(scope="module")
 def admin_token():
@@ -26,9 +24,7 @@ def voter_token():
     return res.json()["token"]
 
 
-# ------------------------------------------------------
 # Missing Token Tests
-# ------------------------------------------------------
 
 def test_missing_token_on_admin_route():
     res = client.get("/admin/voters/count")
@@ -42,9 +38,7 @@ def test_missing_token_on_voter_route():
     assert "Not authenticated" in res.json()["detail"]
 
 
-# ------------------------------------------------------
 # Invalid Token Tests
-# ------------------------------------------------------
 
 def test_invalid_token_rejected_admin_route():
     res = client.get(
@@ -62,9 +56,7 @@ def test_invalid_token_rejected_voter_route():
     assert res.status_code in (401, 403)
 
 
-# ------------------------------------------------------
 # Cross-Permission Tests (Voter → Admin)
-# ------------------------------------------------------
 
 def test_voter_cannot_access_admin_routes(voter_token):
     res = client.get(
@@ -83,9 +75,7 @@ def test_voter_cannot_modify_candidates(voter_token):
     assert res.status_code == 403
 
 
-# ------------------------------------------------------
 # Cross-Permission Tests (Admin → Voter)
-# ------------------------------------------------------
 
 def test_admin_cannot_access_voter_specific_routes(admin_token):
     res = client.get(
@@ -104,9 +94,7 @@ def test_admin_cannot_cast_vote(admin_token):
     assert res.status_code == 403
 
 
-# ------------------------------------------------------
 # Authorized Access Tests
-# ------------------------------------------------------
 
 def test_admin_access_allowed(admin_token):
     res = client.get(
